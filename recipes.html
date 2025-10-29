@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipes</title>
+  <style>
+    :root {
+      --btn-color: #76c893;
+      --btn-hover: #52b69a;
+      --text-light: #333;
+      --text-dark: #f5f5f5;
+    }
+
+    body {
+      margin: 0;
+      font-family: Poppins, sans-serif;
+      background-color: rgba(255, 255, 255, 0.85);
+      background-size: cover;
+      color: var(--text-light);
+      transition: 0.5s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .dark-mode {
+      background-color: rgba(50, 50, 50, 0.85);
+      background-size: cover;
+      color: var(--text-dark);
+    }
+
+    header {
+      width: 100%;
+      background-color: var(--btn-color);
+      padding: 1.5rem 0;
+      text-align: center;
+      font-size: 2rem;
+      font-weight: bold;
+      color: white;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .nav-buttons {
+      margin: 1rem;
+      display: flex;
+      gap: 1rem;
+    }
+
+    button {
+      background: var(--btn-color);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 1rem;
+    }
+
+    button:hover {
+      background: var(--btn-hover);
+      transform: scale(1.05);
+    }
+
+    .recipes-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .dark-mode .recipe {
+      background: rgba(50, 50, 50, 0.85);
+      color: var(--text-dark);
+    }
+
+    .recipe {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.85);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      overflow: hidden;
+      position: relative;
+      transition: transform 0.3s;
+    }
+
+    .recipe:hover {
+      transform: scale(1.05);
+    }
+
+    .recipe img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .recipe h3 {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background: rgba(118, 200, 147, 0.85);
+      color: white;
+      margin: 0;
+      padding: 0.3rem 0;
+      font-size: 1rem;
+    }
+
+    .add-recipe {
+      margin: 2rem 0;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 2rem;
+      border-radius: 20px;
+      width: 300px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .dark-mode .add-recipe {
+      background: rgba(50, 50, 50, 0.9);
+      color: var(--text-dark);
+    }
+
+    .add-recipe input,
+    .add-recipe textarea {
+      width: 90%;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+
+    .dark-mode .add-recipe input,
+    .dark-mode .add-recipe textarea {
+      background-color: #444;
+      color: var(--text-dark);
+      border-color: #666;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>🍲 My Recipes</header>
+
+  <div class="nav-buttons">
+    <button onclick="window.location.href='home.html'">🏠 Home</button>
+    <button onclick="window.location.href='settings.html'">⚙️ Settings</button>
+  </div>
+
+  <div class="recipes-container" id="recipesContainer"></div>
+
+  <div class="add-recipe">
+    <h3>Add New Recipe</h3>
+    <input type="text" id="recipeName" placeholder="Recipe name"><br>
+    <textarea id="recipeIngredients" placeholder="Ingredients" rows="3"></textarea><br>
+    <textarea id="recipeInstructions" placeholder="Preparation" rows="3"></textarea><br>
+    <input type="text" id="recipeImage" placeholder="Image URL"><br>
+    <button onclick="addRecipe()">Add Recipe</button>
+  </div>
+
+  <script>
+    // 15 Delicious Recipes
+ let recipes = [ 
+{ 
+name: "Classic Spaghetti Carbonara", 
+ingredients: "200g spaghetti\n100g pancetta or smoked streaky bacon\n2 large eggs\n50g Pecorino Romano cheese (or Parmesan)\nFreshly ground black pepper\nSalt", 
+instructions: "1. Cook 200g spaghetti in salted water until al dente.\n2. While spaghetti cooks, finely dice 100g pancetta and fry in a pan until crispy. Remove from heat.\n3. In a bowl, whisk 2 large eggs with 50g grated Pecorino or Parmesan and a generous amount of freshly ground black pepper.\n4. Drain spaghetti, reserving 2-3 tablespoons of pasta water. Add spaghetti to the pan with pancetta.\n5. Quickly pour the egg and cheese mixture over the hot spaghetti, stirring continuously. Add a splash (2-3 tbsp) of reserved pasta water to create a creamy sauce. Serve immediately with extra cheese and black pepper.", 
+img: "image/istockphoto-177413384-612x612.jpg" 
+}, 
+{ 
+name: "Simple Tomato Basil Pasta", 
+ingredients: "400g pasta (e.g., penne, fusilli)\n1 tbsp olive oil\n2 cloves garlic, minced\n1 can (400g) chopped tomatoes\nFresh basil leaves, torn\nSalt and pepper to taste\nOptional: Parmesan for serving", 
+instructions: "1. Cook 400g pasta according to package directions.\n2. Heat 1 tbsp olive oil in a pan. Add 2 minced garlic cloves and sauté for about 1 minute until fragrant.\n3. Add 1 can (400g) chopped tomatoes, 1/2 tsp salt, and 1/4 tsp pepper. Simmer for 10-15 minutes until sauce thickens.\n4. Drain pasta and add it to the tomato sauce. Stir in a handful of fresh torn basil leaves.\n5. Serve hot, optionally with 2-3 tbsp grated Parmesan.", 
+img: "image/shutterstock_551751895.webp" 
+}, 
+{ 
+name: "Quick Chicken Stir-Fry", 
+ingredients: "400g chicken breast, sliced\n1 tbsp sesame oil\n1 onion, sliced\n1 bell pepper, sliced\n1 cup broccoli florets\n2 tbsp soy sauce\n1 tbsp honey or maple syrup\n1 tsp grated ginger\nCooked rice for serving", 
+instructions: "1. Heat 1 tbsp sesame oil in a large wok or pan. Add 400g sliced chicken breast and stir-fry until cooked through (about 5-7 minutes).\n2. Add 1 sliced onion, 1 sliced bell pepper, and 1 cup broccoli florets. Stir-fry for 3-5 minutes until vegetables are crisp-tender.\n3. In a small bowl, mix 2 tbsp soy sauce, 1 tbsp honey (or maple syrup), and 1 tsp grated ginger. Pour over chicken and vegetables and stir to coat.\n4. Cook for another 1-2 minutes until the sauce slightly thickens. Serve hot over cooked rice (about 1 cup per serving).", 
+img: "image/chicken-stir-fry-index-65130392700bf.jpg" 
+}, 
+{ 
+name: "Lentil Soup", 
+ingredients: "1 tbsp olive oil\n1 onion, chopped\n2 carrots, chopped\n2 celery stalks, chopped\n2 cloves garlic, minced\n1 cup brown or green lentils, rinsed\n6 cups vegetable broth\n1 can (400g) diced tomatoes\n1 tsp dried thyme\nSalt and pepper to taste", 
+instructions: "1. Heat 1 tbsp olive oil in a large pot. Add 1 chopped onion, 2 chopped carrots, and 2 chopped celery stalks. Sauté for 5-7 minutes until softened.\n2. Add 2 minced garlic cloves and cook for 1 more minute.\n3. Stir in 1 cup rinsed lentils, 6 cups vegetable broth, 1 can (400g) diced tomatoes, and 1 tsp dried thyme. Bring to a boil, then reduce heat, cover, and simmer for 30-40 minutes until lentils are tender.\n4. Season with 1/2 tsp salt and 1/4 tsp pepper (or to taste). Serve hot.", 
+img: "image/360_F_254217949_IdXAyOu75hURvngtgJAV2ngA9Ljds4P0.jpg" 
+}, 
+{ 
+name: "Homemade Pizza Margherita", 
+ingredients: "1 pre-made pizza base or homemade dough\n1/2 cup passata or pizza sauce\n150g fresh mozzarella, torn\nFresh basil leaves\n2 tsp olive oil\nSalt and pepper", 
+instructions: "1. Preheat oven to 220°C (425°F).\n2. Spread 1/2 cup passata evenly over the pizza base. Arrange 150g torn fresh mozzarella over the sauce.\n3. Bake for 10-15 minutes until the crust is golden and cheese is bubbly.\n4. Remove from oven, scatter a handful of fresh basil leaves, drizzle with 2 tsp olive oil, and season with 1/4 tsp salt and a pinch of pepper. Slice and serve.", 
+img: "image/mozzarella-pizza-margherita-FT-RECIPE0621-11fa41ceb1a5465d9036a23da87dd3d4.jpg" 
+}, 
+{ 
+name: "Avocado Toast with Egg", 
+ingredients: "2 slices of bread, toasted\n1 ripe avocado\n2 eggs, cooked to your liking\nSalt, pepper, red pepper flakes to taste\nOptional: everything bagel seasoning", 
+instructions: "1. Toast 2 slices of bread until golden.\n2. Mash 1 ripe avocado and spread evenly over the toast.\n3. Cook 2 eggs as desired (fried, poached, or scrambled).\n4. Place the eggs on top of the avocado toast. Season with 1/4 tsp salt, 1/8 tsp pepper, and a pinch of red pepper flakes. Sprinkle with everything bagel seasoning if using. Serve immediately.", 
+img: "image/EWL-267169-avocado-egg-toast-Hero-02-037627ac211748fc857b5a69989fa8e9.jpg" 
+}, 
+{ 
+name: "Sheet Pan Lemon Herb Chicken & Veggies", 
+ingredients: "4 boneless, skinless chicken thighs\n2 cups chopped potatoes\n1 cup chopped broccoli\n1 cup chopped carrots\n2 tbsp olive oil\n1 lemon, sliced\n1 tbsp dried herbs (Italian seasoning)\nSalt and pepper", 
+instructions: "1. Preheat oven to 200°C (400°F) and line a baking sheet with parchment paper.\n2. In a large bowl, toss 4 chicken thighs, 2 cups chopped potatoes, 1 cup chopped broccoli, and 1 cup chopped carrots with 2 tbsp olive oil, 1 tbsp dried herbs, 1/2 tsp salt, and 1/4 tsp pepper until well coated.\n3. Spread mixture evenly on the prepared baking sheet.\n4. Arrange 1 sliced lemon over chicken and vegetables.\n5. Bake for 25-30 minutes until chicken is cooked through and vegetables are tender. Serve hot.", 
+img: "image/Sheet-Pan-Lemon-Garlic-Chicken-Potatoes-6-500x500-c.jpg" 
+}, 
+{ 
+name: "Creamy Tomato Soup", 
+ingredients: "1 tbsp olive oil\n1 onion, chopped\n2 cloves garlic, minced\n1 can (800g) crushed tomatoes\n4 cups vegetable broth\n1/2 cup heavy cream\n1 tsp sugar (optional)\nSalt and pepper to taste\nFresh basil for garnish", 
+instructions: "1. Heat 1 tbsp olive oil in a large pot over medium heat. Add 1 chopped onion and cook until softened, about 5 minutes.\n2. Add 2 minced garlic cloves and cook for 1 minute until fragrant.\n3. Stir in 1 can (800g) crushed tomatoes, 4 cups vegetable broth, and 1 tsp sugar (if using). Bring to a simmer and cook for 15-20 minutes.\n4. Remove from heat and blend until smooth using an immersion blender.\n5. Stir in 1/2 cup heavy cream. Season with 1/2 tsp salt and 1/4 tsp pepper. Garnish with fresh basil leaves before serving.", 
+img: "image/creamy-tomato-soup-buttery-croutons-hero-01-51eae01d707b429e9055bb0e1776ad4e.jpg" 
+}, 
+{ 
+name: "Breakfast Burrito", 
+ingredients: "4 large tortillas\n4 eggs, scrambled\n1/2 cup shredded cheese\n1/4 cup cooked black beans\n1/4 cup salsa\nOptional: cooked sausage or bacon, avocado", 
+instructions: "1. Scramble 4 eggs and cook any optional meat (e.g., 50g sausage or 2 slices bacon).\n2. Warm 4 large tortillas slightly.\n3. Divide 4 scrambled eggs, 1/2 cup shredded cheese, 1/4 cup black beans, and 1/4 cup salsa evenly among tortillas.\n4. Add optional ingredients like cooked sausage, bacon, or 1/2 sliced avocado.\n5. Fold in sides of each tortilla and roll tightly from the bottom. Serve immediately.", 
+img: "image/breakfast-burrito-index-66a7e23ca6c89.jpg" 
+}, 
+{ 
+name: "Baked Salmon with Asparagus", 
+ingredients: "2 salmon fillets\n1 bunch asparagus, trimmed\n1 tbsp olive oil\n1 lemon, sliced\n2 cloves garlic, minced\nSalt, pepper, dried dill to taste", 
+instructions: "1. Preheat oven to 200°C (400°F) and line a baking sheet with parchment paper.\n2. Place 2 salmon fillets on one side of the baking sheet and 1 bunch asparagus on the other.\n3. Drizzle 1 tbsp olive oil over salmon and asparagus. Sprinkle 2 minced garlic cloves, 1/2 tsp salt, 1/4 tsp pepper, and 1 tsp dried dill over them.\n4. Place 1 sliced lemon over salmon.\n5. Bake for 12-18 minutes until salmon flakes easily and asparagus is tender-crisp. Serve hot.", 
+img: "image/Salmon-and-Asparagus-3.jpg" 
+}, 
+{ 
+name: "Greek Salad", 
+ingredients: "1 head romaine lettuce, chopped\n1 cucumber, diced\n1 bell pepper, diced\n1/2 red onion, thinly sliced\n1/2 cup cherry tomatoes, halved\n1/2 cup Kalamata olives\n100g feta cheese, crumbled\nFor dressing: 3 tbsp olive oil, 1 tbsp red wine vinegar, 1 tsp dried oregano, salt & pepper", 
+instructions: "1. In a large bowl, combine 1 head chopped romaine, 1 diced cucumber, 1 diced bell pepper, 1/2 sliced red onion, 1/2 cup halved cherry tomatoes, and 1/2 cup Kalamata olives.\n2. Whisk together 3 tbsp olive oil, 1 tbsp red wine vinegar, 1 tsp dried oregano, 1/4 tsp salt, and 1/8 tsp pepper.\n3. Pour dressing over salad and toss to coat.\n4. Crumble 100g feta cheese over the top and serve.", 
+img: "image/Frozen-Fruit-Smoothie-Bowl.jpg" 
+}, 
+{ 
+name: "Chicken Quesadillas", 
+ingredients: "4 large tortillas\n1 cup cooked chicken, shredded\n1 cup shredded cheddar or Mexican cheese blend\n1/4 cup chopped onion\n1/4 cup chopped bell pepper\n1 tbsp olive oil\nSalsa, sour cream, or guacamole for serving", 
+instructions: "1. Heat 1 tbsp olive oil in a large skillet over medium heat. Add 1/4 cup chopped onion and 1/4 cup chopped bell pepper. Cook for 3-5 minutes until softened.\n2. Add 1 cup shredded cooked chicken and cook 2-3 minutes until heated through.\n3. Lay one tortilla in the skillet. Sprinkle 1/2 cup shredded cheese, then half the chicken mixture, then remaining 1/2 cup cheese. Top with another tortilla.\n4. Cook 3-4 minutes per side until golden brown and cheese is melted. Repeat for second quesadilla.\n5. Slice into wedges and serve with salsa, sour cream, or guacamole.", 
+img: "image/chicken-quesadilla-recipe-5.webp" 
+}, 
+{ 
+name: "Berry Smoothie Bowl", 
+ingredients: "1 cup frozen mixed berries\n1/2 frozen banana\n1/2 cup unsweetened almond milk\n1 tbsp chia seeds\nOptional toppings: granola, fresh fruit, nuts, coconut flakes", 
+instructions: "1. Combine 1 cup frozen mixed berries, 1/2 frozen banana, 1/2 cup almond milk, and 1 tbsp chia seeds in a blender.\n2. Blend until smooth and creamy. Add more almond milk if needed to reach a thick consistency.\n3. Pour into a bowl and top with granola, fresh berries, sliced banana, nuts, or coconut flakes. Serve immediately.", 
+img: "image/Courgette-curry-c295fa0.jpg" 
+}, 
+{ 
+name: "Garlic Butter Shrimp Pasta", 
+ingredients: "200g linguine or spaghetti\n300g raw shrimp, peeled and deveined\n2 tbsp butter\n3 cloves garlic, minced\n1/4 cup white wine or chicken broth\nJuice of 1/2 lemon\nFresh parsley, chopped\nSalt and pepper", 
+instructions: "1. Cook 200g pasta according to package directions until al dente.\n2. While pasta cooks, melt 2 tbsp butter in a large skillet over medium heat. Add 3 minced garlic cloves and cook 1 minute until fragrant.\n3. Add 300g raw shrimp and cook 2-3 minutes per side until pink and cooked through. Remove shrimp from pan.\n4. Pour 1/4 cup white wine or chicken broth into the skillet and scrape up browned bits. Bring to a simmer and stir in juice of 1/2 lemon.\n5. Add cooked pasta to the skillet and return shrimp. Toss to combine. Sprinkle with 2 tbsp chopped parsley, season with 1/2 tsp salt and 1/4 tsp pepper, and serve immediately.", 
+img: "image/Pasta-with-garlic-butter-shrimp-recipe.jpg" 
+}, 
+{ 
+name: "Vegetable Curry", 
+ingredients: "1 tbsp coconut oil\n1 onion, chopped\n2 cloves garlic, minced\n1 tbsp grated ginger\n1 tbsp curry powder\n1 can (400g) coconut milk\n1 can (400g) diced tomatoes\n2 cups mixed vegetables (cauliflower, peas, spinach, bell pepper)\nCooked rice for serving", 
+instructions: "1. Heat 1 tbsp coconut oil in a large pot. Add 1 chopped onion and cook 5 minutes until softened.\n2. Add 2 minced garlic cloves and 1 tbsp grated ginger. Cook 1 minute until fragrant.\n3. Stir in 1 tbsp curry powder and cook 1 more minute.\n4. Pour in 1 can (400g) coconut milk and 1 can (400g) diced tomatoes. Bring to a simmer.\n5. Add 2 cups mixed vegetables. Cover and simmer 15-20 minutes until vegetables are tender. Stir in 1 cup fresh spinach at the end until wilted.\n6. Serve hot with cooked rice (about 1 cup per serving).", 
+img: "image/Simply-Recipes-Easy-Greek-Salad-LEAD-2-4601eff771fd4de38f9722e8cafc897a.jpg"
+}
+];
+
+
+    // Store recipes in localStorage
+    localStorage.setItem("recipes", JSON.stringify(recipes));
+
+
+    // Render recipes (existing function, ensure it's still present)
+    // Render recipes
+    function renderRecipes() {
+      const container = document.getElementById("recipesContainer");
+      container.innerHTML = "";
+      recipes.forEach((recipe, index) => {
+        const div = document.createElement("div");
+        div.classList.add("recipe");
+        div.innerHTML = `
+            <!-- Ensure this img tag correctly references your recipe.img -->
+            <img src="${recipe.img}" alt="${recipe.name}"> 
+            <h3>${recipe.name}</h3>
+        `;
+        div.onclick = () => {
+          localStorage.setItem("selectedRecipeIndex", index);
+          // 🔹 IMPORTANT: Store the actual recipe image path here
+          localStorage.setItem("selectedRecipeImage", recipe.img);
+          window.location.href = "recipe.html";
+        };
+        container.appendChild(div);
+      });
+    }
+
+    // Add new recipe (existing function, ensure it's still present)
+    function addRecipe() {
+      const name = document.getElementById("recipeName").value.trim();
+      const ingredients = document.getElementById("recipeIngredients").value.trim();
+      const instructions = document.getElementById("recipeInstructions").value.trim();
+      const img = document.getElementById("recipeImage").value.trim();
+
+      if (!name || !ingredients || !instructions) {
+        alert("Please fill in all fields!");
+        return;
+      }
+
+      recipes.push({ name, ingredients, instructions, img });
+      localStorage.setItem("recipes", JSON.stringify(recipes));
+      renderRecipes();
+
+      document.getElementById("recipeName").value = "";
+      document.getElementById("recipeIngredients").value = "";
+      document.getElementById("recipeInstructions").value = "";
+      document.getElementById("recipeImage").value = "";
+    }
+
+    // Apply settings
+    const defaultSettings = { theme: "light", fontSize: 16, speed: 0.8 }; // Consistent default settings
+    let userSettings = JSON.parse(localStorage.getItem("userSettings")) || defaultSettings; // Use consistent key
+
+    function applySettings() {
+      document.body.style.fontSize = userSettings.fontSize + "px";
+      if (userSettings.theme === "dark") { document.body.classList.add("dark-mode"); }
+      else { document.body.classList.remove("dark-mode"); }
+    }
+
+    // Listen for changes in localStorage to update settings across tabs/windows
+    window.addEventListener('storage', function (event) {
+      if (event.key === 'userSettings') {
+        userSettings = JSON.parse(event.newValue) || defaultSettings;
+        applySettings();
+      }
+    });
+
+    applySettings(); // Apply initial settings
+    renderRecipes();
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📝 Registration / Login</title>
+<style>
+body {
+  font-family: "Poppins", sans-serif;
+  background: #f2f2f2;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.container {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  width: 100%;
+  max-width: 400px;
+}
+h1 { text-align: center; margin-bottom: 1.5rem; }
+input {
+  width: 100%;
+  padding: 0.8rem;
+  margin: 0.5rem 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+button {
+  width: 100%;
+  padding: 0.8rem;
+  background: #76c893;
+  color: white;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: 0.3s;
+}
+button:hover { background: #52b69a; }
+#error { color: red; text-align: center; margin-top: 0.5rem; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Registration / Login</h1>
+  <input type="text" id="firstName" placeholder="First Name" />
+  <input type="text" id="lastName" placeholder="Last Name" />
+  <input type="password" id="password" placeholder="Password" />
+  <button id="submitBtn">Submit</button>
+  <div id="error"></div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const firstNameInput = document.getElementById("firstName");
+  const lastNameInput = document.getElementById("lastName");
+  const passwordInput = document.getElementById("password");
+  const submitBtn = document.getElementById("submitBtn");
+  const errorDiv = document.getElementById("error");
+
+  // 🔹 FIXED: Load users safely from localStorage
+  let users;
+  try {
+    users = JSON.parse(localStorage.getItem("users")); 
+    if (!Array.isArray(users)) { // 🔹 Ensure users is an array
+      users = [];
+    }
+  } catch (e) {
+    users = [];
+  }
+
+  function validateName(name) {
+    return /^[A-Z][a-zA-Z]{1,}$/.test(name);
+  }
+
+  function validatePassword(password) {
+    return /^\d+$/.test(password);
+  }
+
+  submitBtn.addEventListener("click", () => {
+    const firstName = firstNameInput.value.trim();
+    const lastName = lastNameInput.value.trim();
+    const password = passwordInput.value.trim();
+    errorDiv.textContent = "";
+
+    if (!validateName(firstName)) {
+      errorDiv.textContent = "First name invalid. Must start with capital letter and contain only letters.";
+      return;
+    }
+    if (!validateName(lastName)) {
+      errorDiv.textContent = "Last name invalid. Must start with capital letter and contain only letters.";
+      return;
+    }
+    if (!validatePassword(password)) {
+      errorDiv.textContent = "Password must contain only numbers.";
+      return;
+    }
+
+    // 🔹 FIXED: Safe .find() call
+    let existingUser = users.find(u => u.firstName === firstName && u.lastName === lastName);
+
+    if (existingUser) {
+      if (existingUser.password === password) {
+        localStorage.setItem("currentUser", JSON.stringify(existingUser));
+        // 🔹 FIXED: Use assign for reliable redirect
+        window.location.assign("home.html");
+      } else {
+        errorDiv.textContent = "Incorrect password.";
+      }
+    } else {
+      const newUser = { firstName, lastName, password };
+      users.push(newUser);
+      localStorage.setItem("users", JSON.stringify(users));
+      localStorage.setItem("currentUser", JSON.stringify(newUser));
+      window.location.assign("home.html");
+    }
+  });
+});
+</script>
+
+</body>
+</html>

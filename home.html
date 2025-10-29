@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home</title>
+<style>
+:root {
+--btn-color: #76c893;
+--btn-hover: #52b69a;
+--text-light: #333;
+--text-dark: #f5f5f5;
+}
+
+body {
+margin: 0;
+font-family: Poppins, sans-serif;
+background-size: cover;
+color: var(--text-light);
+transition: background-image 1s ease-in-out, background-color 0.5s, color 0.5s, font-size 0.5s;;
+display: flex;
+flex-direction: column;
+align-items: center;
+min-height: 100vh;
+}
+
+.dark-mode {
+color: var(--text-dark);
+}
+
+header {
+width: 100%;
+background-color: var(--btn-color);
+padding: 2rem 0;
+text-align: center;
+font-size: 2.5rem;
+font-weight: bold;
+color: white;
+box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+button {
+background: var(--btn-color);
+color: white;
+border: none;
+padding: 0.8rem 1.5rem;
+border-radius: 25px;
+cursor: pointer;
+margin: 1rem;
+transition: 0.3s;
+font-size: 1rem;
+}
+
+button:hover {
+background: var(--btn-hover);
+transform: scale(1.05);
+}
+</style>
+</head>
+<body>
+
+<header>🍳 My Recipe Book</header>
+
+<div style="margin-top: 5rem; text-align:center;">
+<button onclick="window.location.href='recipes.html'">View Recipes</button>
+<button onclick="window.location.href='settings.html'">Display Settings</button>
+</div>
+
+<script>
+// Default display settings
+const defaultSettings = { theme: "light", fontSize: 16, speed: 0.8 };
+
+// Load user settings from localStorage if available
+let userSettings = JSON.parse(localStorage.getItem("userSettings")) || defaultSettings;
+
+const allRecipes = JSON.parse(localStorage.getItem("recipes")) || [];
+
+const homepageBackgroundImages = [
+    allRecipes[0]?.img,
+    allRecipes[2]?.img,
+    allRecipes[4]?.img,
+    allRecipes[6]?.img,
+    allRecipes[9]?.img, 
+    allRecipes[13]?.img 
+].filter(Boolean);
+
+let currentImageIndex = 0;
+const rotationIntervalTime = 7000;
+let backgroundRotationInterval;
+
+function changeBackgroundImage() {
+    if (homepageBackgroundImages.length === 0) {
+        return;
+    }
+
+    const imageUrl = homepageBackgroundImages[currentImageIndex];
+    document.body.style.backgroundImage = `url('${imageUrl}')`;
+
+    // Re-apply dark mode overlay if dark mode is active
+    if (userSettings.theme === "dark") {
+        document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('${imageUrl}')`;
+    }
+
+    currentImageIndex = (currentImageIndex + 1) % homepageBackgroundImages.length;
+}
+
+function startBackgroundRotation() {
+    if (backgroundRotationInterval) {
+        clearInterval(backgroundRotationInterval);
+    }
+    changeBackgroundImage(); 
+    backgroundRotationInterval = setInterval(changeBackgroundImage, rotationIntervalTime);
+}
+
+// Apply settings to the page
+function applySettings() {
+    document.body.style.fontSize = userSettings.fontSize + "px";
+    if (userSettings.theme === "dark") {
+        document.body.classList.add("dark-mode");
+        // Ensure the dark overlay is applied immediately
+        const currentImageUrl = homepageBackgroundImages[currentImageIndex > 0 ? currentImageIndex - 1 : homepageBackgroundImages.length - 1]; // Get the currently displayed image
+        if (currentImageUrl) {
+            document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('${currentImageUrl}')`;
+        }
+    } else {
+        document.body.classList.remove("dark-mode");
+        // Ensure the image is shown without overlay
+        const currentImageUrl = homepageBackgroundImages[currentImageIndex > 0 ? currentImageIndex - 1 : homepageBackgroundImages.length - 1];
+        if (currentImageUrl) {
+            document.body.style.backgroundImage = `url('${currentImageUrl}')`;
+        }
+    }
+}
+
+
+// Initialize settings
+applySettings();
+startBackgroundRotation();
+
+// Listen for changes in localStorage to update settings across tabs/windows
+window.addEventListener('storage', function(event) {
+    if (event.key === 'userSettings') {
+        userSettings = JSON.parse(event.newValue) || defaultSettings;
+        applySettings();
+    }
+});
+</script>
+
+</body>
+</html>

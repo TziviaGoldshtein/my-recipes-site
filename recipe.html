@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recipe Details</title>
+<style>
+:root {
+--btn-color: #76c893;
+--btn-hover: #52b69a;
+--text-light: #333;
+--text-dark: #f5f5f5;
+}
+
+body {
+margin: 0;
+font-family: Poppins, sans-serif;
+background-size: cover;
+color: var(--text-light);
+transition: 0.5s;
+display: flex;
+flex-direction: column;
+align-items: center;
+min-height: 100vh;
+}
+
+.dark-mode {
+background-size: cover;
+color: var(--text-dark);
+}
+
+header {
+width: 100%;
+background-color: var(--btn-color);
+padding: 1.5rem 0;
+text-align: center;
+font-size: 2rem;
+font-weight: bold;
+color: white;
+box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+button {
+background: var(--btn-color);
+color: white;
+border: none;
+padding: 0.8rem 1.5rem;
+border-radius: 25px;
+cursor: pointer;
+margin: 0.5rem;
+transition: 0.3s;
+font-size: 1rem;
+}
+
+button:hover {
+background: var(--btn-hover);
+transform: scale(1.05);
+}
+
+.container {
+background: rgba(255, 255, 255, 0.9);
+border-radius: 20px;
+padding: 2rem;
+width: 90%;
+max-width: 600px;
+text-align: center;
+box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+margin-top: 2rem;
+}
+
+.dark-mode .container {
+background: rgba(50, 50, 50, 0.9);
+color: var(--text-dark);
+}
+
+.recipe-title {
+margin-top: 1rem;
+font-size: 2rem;
+font-weight: bold;
+color: var(--btn-color);
+}
+
+.section-title {
+font-weight: bold;
+margin-top: 1.5rem;
+text-decoration: underline;
+}
+
+p {
+white-space: pre-line;
+margin-top: 0.5rem;
+line-height: 1.6;
+}
+</style>
+</head>
+<body>
+
+<header>🍴 Recipe Details</header>
+
+<div>
+<button onclick="window.location.href='recipes.html'">⬅ Back to Recipes</button>
+<button onclick="window.location.href='settings.html'">⚙️ Settings</button>
+</div>
+
+<div class="container">
+<div id="recipeName" class="recipe-title"></div>
+
+<div class="section-title">🧂 Ingredients</div>
+<p id="recipeIngredients"></p>
+
+<div class="section-title">🍳 Preparation</div>
+<p id="recipeInstructions"></p>
+
+<button id="readBtn">Read</button>
+<button id="pauseBtn">Pause</button>
+</div>
+
+<script>
+const selectedRecipeIndex = localStorage.getItem("selectedRecipeIndex");
+const selectedRecipeImage = localStorage.getItem("selectedRecipeImage");
+const recipes = JSON.parse(localStorage.getItem("recipes")) || [];
+
+let utterance;
+let currentVoiceSpeed = 0.8;
+
+function setBodyBackground(imageUrl) {
+  document.body.style.backgroundImage = `url('${imageUrl}')`;
+  document.body.style.backgroundRepeat = 'no-repeat';
+  document.body.style.backgroundPosition = 'center center';
+  document.body.style.backgroundAttachment = 'fixed';
+  document.body.style.backgroundSize = 'cover';
+}
+
+if (selectedRecipeIndex !== null && recipes[selectedRecipeIndex]) {
+  const recipe = recipes[selectedRecipeIndex];
+  document.getElementById("recipeName").textContent = recipe.name;
+  document.getElementById("recipeIngredients").textContent = recipe.ingredients || "No ingredients listed.";
+  document.getElementById("recipeInstructions").textContent = recipe.instructions || "";
+
+  if (selectedRecipeImage) {
+    setBodyBackground(selectedRecipeImage);
+  }
+}
+
+// Function to create and speak the utterance
+function speakRecipeText() {
+  const textToSpeak =
+    document.getElementById("recipeIngredients").textContent + ". " +
+    document.getElementById("recipeInstructions").textContent;
+
+  speechSynthesis.cancel(); // cancel any ongoing speech
+
+  utterance = new SpeechSynthesisUtterance(textToSpeak);
+  utterance.lang = 'en-US';
+  utterance.rate = currentVoiceSpeed;
+
+  utterance.onend = () => console.log("Speech finished.");
+  speechSynthesis.speak(utterance);
+}
+
+// Read aloud
+document.getElementById("readBtn").onclick = () => {
+  speakRecipeText();
+};
+
+// Pause reading
+document.getElementById("pauseBtn").onclick = () => {
+  if (speechSynthesis.speaking) {
+    speechSynthesis.cancel();
+    console.log("Speech stopped.");
+  }
+};
+
+// Apply dark/light mode
+const defaultSettings = { theme: "light", fontSize: 16, speed: 0.8 };
+let userSettings = JSON.parse(localStorage.getItem("userSettings")) || defaultSettings;
+
+function applySettings() {
+  document.body.style.fontSize = userSettings.fontSize + "px";
+  currentVoiceSpeed = userSettings.speed;
+
+  if (userSettings.theme === "dark") {
+    document.body.classList.add("dark-mode");
+    if (selectedRecipeImage) {
+      document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('${selectedRecipeImage}')`;
+    }
+  } else {
+    document.body.classList.remove("dark-mode");
+    if (selectedRecipeImage) {
+      setBodyBackground(selectedRecipeImage);
+    }
+  }
+}
+
+window.addEventListener('storage', function(event) {
+  if (event.key === 'userSettings') {
+    userSettings = JSON.parse(event.newValue) || defaultSettings;
+    applySettings();
+  }
+});
+
+applySettings();
+</script>
+
+</body>
+</html>
